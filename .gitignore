@@ -1,0 +1,6 @@
+venv
+.env
+.vscode/
+*.pyc
+tmp.txt
+direct_request.py
