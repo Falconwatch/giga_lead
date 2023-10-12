@@ -1,4 +1,4 @@
-from giga_help.gigapi import GigaAPI
+from giga_lead.gigapi import GigaAPI
 
 def test_get_token():
     ga = GigaAPI()
