@@ -1,13 +1,6 @@
-from giga_lead.gigapi import GigaAPI
+from giga_lead.news_handler import NewsHandler
 
-def test_get_token():
-    ga = GigaAPI()
-    token = ga.get_token()
-    assert token
-
-def test_get_models():
-    ga = GigaAPI()
-    models = ga.get_models()
-    assert len(models["data"])>0
-
-
+def test_process_one_news():
+    nh = NewsHandler()
+    result = nh.process_news("Новость")
+    assert result
