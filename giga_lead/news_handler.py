@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from gigachat import GigaChat
 from gigachat.models import Chat, Messages, MessagesRole
 import os
+from dto.newsdto import NewsDTO, ProcessedNewsDTO
 
 
 class NewsHandler():
@@ -14,9 +15,11 @@ class NewsHandler():
         
         #TODO: переписать на сигмовский интерфейс
         self._giga = GigaChat(credentials=os.environ["SECRET"], verify_ssl_certs=False)
+
+    def _giga_call(self, msg: str) -> str:
+        return "model response"
         
-    def process_news(self, one_news):
-        one_news_processing_result = ""
+        #TODO: реализовать логику вызова нейронки. Потенциально два варианта: сигма и внешний(?)
         #тут писать логику обработки одной новости
         payload = Chat(
             messages=[
@@ -30,17 +33,27 @@ class NewsHandler():
             max_tokens=1000,
         )
 
+        response = self._giga.chat(payload)
+
+
+
         interesting_questions="""О каких компаниях идёт речь в новости? 
             Предположи какие банковские продукты могут быть инетресны компаниям в новости?"""
         user_input = one_news + interesting_questions
 
         payload.messages.append(Messages(role=MessagesRole.USER, content=user_input))
-        response = self._giga.chat(payload)
-        one_news_processing_result = response.choices[0].message.content
 
-        return one_news_processing_result
+        
 
-    def batch_process_news(self, news):
+    #TODO: переписать на async    
+    def process_news(self, one_news:NewsDTO):
+        model_response = self._giga_call(one_news.text)
+        result = ProcessedNewsDTO(news_id=one_news.news_id,
+                                  processing_result=[model_response]
+                                  )
+        return result
+
+    def batch_process_news(self, news: list[NewsDTO]):
         news_processing_result = list()
         for one_news in news:
             news_processing_result.append(self.process_news(one_news))

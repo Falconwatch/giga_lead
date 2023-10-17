@@ -1,3 +1,4 @@
 giga_lead/__pycache__
 tests/__pycache__
 venv
+*.pyc
