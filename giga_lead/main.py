@@ -20,7 +20,7 @@ async def process_one_news(one_news: NewsDTO):
     return HTTPException(400, detail="Something went wrong")
 
 @app.post("/news/batch")
-async def process_one_news(batch_news: [NewsDTO]):
+async def process_one_news(batch_news: list[NewsDTO]):
     batch_news_response = [nh.process_news(one_news.text) for one_news in batch_news]
     if batch_news_response & len(batch_news_response):
         return jsonable_encoder(batch_news_response)
