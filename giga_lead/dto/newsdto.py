@@ -1,5 +1,11 @@
 from pydantic import BaseModel
 
+
 class NewsDTO(BaseModel):
-    user_uid: str | None = None
+    news_uid: str
     text: str 
+
+class ServiceResponseDTO(BaseModel):
+    user_uid: str | None = None
+    service_uid: str |None = None
+    news: list[NewsDTO]

@@ -1,7 +1,7 @@
 from news_handler import NewsHandler
 from fastapi import FastAPI, HTTPException
 import uvicorn
-from dto.newsdto import NewsDTO
+from dto.newsdto import NewsDTO, ServiceResponseDTO
 from fastapi.encoders import jsonable_encoder
 
 
@@ -12,16 +12,10 @@ nh = NewsHandler()
 async def ping():
     return "pong"
 
-@app.post("/news/one")
-async def process_one_news(one_news: NewsDTO):
-    one_n_response = nh.process_news(one_news.text)
-    if one_n_response:
-        return jsonable_encoder(one_n_response)
-    return HTTPException(400, detail="Something went wrong")
 
 @app.post("/news/batch")
-async def process_one_news(batch_news: list[NewsDTO]):
-    batch_news_response = [nh.process_news(one_news.text) for one_news in batch_news]
+async def process_batch_news(batch_news: ServiceResponseDTO):
+    batch_news_response = [nh.process_news(one_news.text) for one_news in batch_news.news]
     if batch_news_response & len(batch_news_response):
         return jsonable_encoder(batch_news_response)
     return HTTPException(400, detail="Something went wrong")
