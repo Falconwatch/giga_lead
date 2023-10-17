@@ -12,6 +12,7 @@ class NewsHandler():
         except:
             raise BaseException("не удалось считать secret")
         
+        #TODO: переписать на сигмовский интерфейс
         self._giga = GigaChat(credentials=os.environ["SECRET"], verify_ssl_certs=False)
         
     def process_news(self, one_news):
