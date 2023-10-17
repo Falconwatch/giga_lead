@@ -1,9 +1,8 @@
 from news_handler import NewsHandler
 from fastapi import FastAPI, HTTPException
 import uvicorn
-from dto.newsdto import NewsDTO, ServiceResponseDTO
+from dto.newsdto import ServiceRequestDTO, ServiceResponseDTO
 from fastapi.encoders import jsonable_encoder
-
 
 app = FastAPI()
 nh = NewsHandler()
@@ -14,7 +13,7 @@ async def ping():
 
 
 @app.post("/news/batch")
-async def process_batch_news(batch_news: ServiceResponseDTO):
+async def process_batch_news(batch_news: ServiceRequestDTO) -> ServiceResponseDTO:
     batch_news_response = [nh.process_news(one_news.text) for one_news in batch_news.news]
     if batch_news_response & len(batch_news_response):
         return jsonable_encoder(batch_news_response)
