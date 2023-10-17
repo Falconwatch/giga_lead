@@ -1,0 +1,7 @@
+
+"shcherbakoviand:2-GYqPcyQjhq"
+token: eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4R0NNIiwidHlwIjoiSldUIn0..iVLddRm1Yfkvw3Xt.ixp32QG2PGt2PG_XYETrOT6B6T5j-EP__XBNosTU6Wl-k4sKGB339MfYouW6EBidSsweC_CBn1P-tP4.ySUrOCyB6emwhVh63sGOxA
+
+curl -X 'POST' \
+   "https://beta.saluteai.sberdevices.ru/v1/token" \
+   -u 'shcherbakoviand:2-GYqPcyQjhq' \
