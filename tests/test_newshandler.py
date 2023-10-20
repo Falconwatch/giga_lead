@@ -9,4 +9,3 @@ def test_process_one_news():
 
     response = nh.process_news(one_news)
     assert response
-    
