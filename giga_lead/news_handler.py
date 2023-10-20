@@ -3,44 +3,29 @@ from gigachat import GigaChat
 from gigachat.models import Chat, Messages, MessagesRole
 import os
 from dto.newsdto import NewsDTO, ProcessedNewsDTO
-from giga_wrappers.giga_wrappers import GigaWrapperSigma, GigaWrapperInternet
+from giga_wrappers.giga_wrappers import GigaWrapperSigma, GigaWrapperInternet, GigaWrapperAlpha
 
+from enum import Enum
+
+# class syntax
+class Segments(Enum):
+    ALPHA = "alpha"
+    SIGMA = "sigma"
+    INTERNET = "internet"
 
 class NewsHandler():
-    def __init__(self):       
-        self._giga_wrapper = GigaWrapperInternet()
+    def __init__(self, segment:Segments = Segments.INTERNET):      
+        if segment==Segments.ALPHA: 
+            self._giga_wrapper = GigaWrapperAlpha()
+        elif segment == Segments.SIGMA:
+            self._giga_wrapper = GigaWrapperSigma()
+        elif segment == Segments.INTERNET:
+            self._giga_wrapper = GigaWrapperInternet()
         
 
     def _giga_call(self, msg: str) -> str:
         response = self._giga_wrapper.call(msg)
         return response
-        #TODO: удалить после отладки
-        return "model response"
-        
-        #TODO: реализовать логику вызова нейронки. Потенциально два варианта: сигма и внешний(?)
-        #тут писать логику обработки одной новости
-        payload = Chat(
-            messages=[
-                Messages(
-                    role=MessagesRole.SYSTEM,
-                    #TODO: вытащить систем промпт в конфиг
-                    content="Ты эксперт банковского сектора. На соновании данной новости отвечай на заданные вопросы. Не фантазируй, используй только данную тебе информацию"
-                )
-            ],
-            temperature=0.001,
-            max_tokens=1000,
-        )
-
-        response = self._giga.chat(payload)
-
-
-
-        interesting_questions="""О каких компаниях идёт речь в новости? 
-            Предположи какие банковские продукты могут быть инетресны компаниям в новости?"""
-        user_input = one_news + interesting_questions
-
-        payload.messages.append(Messages(role=MessagesRole.USER, content=user_input))
-
         
 
     #TODO: переписать на async    
