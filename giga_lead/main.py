@@ -7,6 +7,10 @@ from fastapi.encoders import jsonable_encoder
 app = FastAPI()
 nh = NewsHandler()
 
+#TODO: Убрать, использовалось для дебага
+nh._giga_call("Моё сообщение")
+
+
 @app.get("/ping")
 async def ping():
     return "pong"

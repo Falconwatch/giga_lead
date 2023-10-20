@@ -3,20 +3,18 @@ from gigachat import GigaChat
 from gigachat.models import Chat, Messages, MessagesRole
 import os
 from dto.newsdto import NewsDTO, ProcessedNewsDTO
+from giga_wrappers.giga_wrappers import GigaWrapperSigma, GigaWrapperInternet
 
 
 class NewsHandler():
-    def __init__(self):
-        load_dotenv()
-        try:
-            assert(os.environ["SECRET"])
-        except:
-            raise BaseException("не удалось считать secret")
+    def __init__(self):       
+        self._giga_wrapper = GigaWrapperInternet()
         
-        #TODO: переписать на сигмовский интерфейс
-        self._giga = GigaChat(credentials=os.environ["SECRET"], verify_ssl_certs=False)
 
     def _giga_call(self, msg: str) -> str:
+        response = self._giga_wrapper.call(msg)
+        return response
+        #TODO: удалить после отладки
         return "model response"
         
         #TODO: реализовать логику вызова нейронки. Потенциально два варианта: сигма и внешний(?)
