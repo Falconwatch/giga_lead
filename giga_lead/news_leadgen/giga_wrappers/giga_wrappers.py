@@ -10,6 +10,13 @@ class BaseGigaWrapper(GigaWrapperInterface):
         super().__init__(base_prompt)
         load_dotenv()
 
+
+    def _base_call(self, payload: Chat):
+        response = self._giga.chat(payload)
+        response_content = response.choices[0].message.content
+        return response_content
+
+
     def call(self, msg: str) -> str:
         payload = Chat(
                         messages=[
@@ -18,10 +25,18 @@ class BaseGigaWrapper(GigaWrapperInterface):
                         temperature=0.001,
                         max_tokens=1000,
                         )
-        response = self._giga.chat(payload)
-        response_content = response.choices[0].message.content
-        return response_content
+        return self._base_call(payload)
     
+
+    def call(self, messages: list[Messages]) -> str:
+        payload = Chat(
+            messages=messages,
+            temperature=0.001,
+            max_tokens=1000,
+        )
+        return self._base_call(payload)
+    
+
     def _read_cert_data(self):
         #TODO: реализовать чтение данных из файла конфигурации
         config = configparser.ConfigParser()
