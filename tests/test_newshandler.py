@@ -1,5 +1,5 @@
 from ..giga_lead.dto.newsdto import NewsDTO
-from ..giga_lead.news_handler import NewsHandler
+from ..news_leadgen.news_handler import NewsHandler
 
 def test_process_one_news():
     nh = NewsHandler()

@@ -1,4 +1,4 @@
-from news_handler import NewsHandler
+from news_leadgen.news_handler import NewsHandler
 from fastapi import FastAPI, HTTPException
 import uvicorn
 from dto.newsdto import ServiceRequestDTO, ServiceResponseDTO

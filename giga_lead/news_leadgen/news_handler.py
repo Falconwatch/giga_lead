@@ -1,9 +1,6 @@
-from dotenv import load_dotenv
-from gigachat import GigaChat
-from gigachat.models import Chat, Messages, MessagesRole
-import os
-from dto.newsdto import NewsDTO, ProcessedNewsDTO
-from giga_wrappers.giga_wrappers import GigaWrapperSigma, GigaWrapperInternet, GigaWrapperAlpha
+#from dto.newsdto import NewsDTO, ProcessedNewsDTO
+from .dto.newsdto import NewsDTO, ProcessedNewsDTO
+from .giga_wrappers.giga_wrappers import GigaWrapperSigma, GigaWrapperInternet, GigaWrapperAlpha
 
 from enum import Enum
 
