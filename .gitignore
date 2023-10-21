@@ -3,4 +3,5 @@ tests/__pycache__
 venv
 *.pyc
 .vscode
-giga_lead/jupyter_env
+jupyter_venv
+*.xlsx
