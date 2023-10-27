@@ -28,7 +28,7 @@ class BaseGigaWrapper(GigaWrapperInterface):
         return self._base_call(payload)
     
 
-    def call(self, messages: list[Messages]) -> str:
+    def call_dialog(self, messages: list[Messages]) -> str:
         payload = Chat(
             messages=messages,
             temperature=0.001,
