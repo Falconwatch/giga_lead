@@ -32,7 +32,7 @@ class NewsHandler():
     
     def get_questions_as_one_string(self) -> str:
         """Возвращает вопросы нумерованным списком"""
-        return "\n".join(["{0}) {1}".format(i,q) for i,q in enumerate(self._questions)])
+        return "\n".join(["{0}) {1}".format(i,q) for i,q in enumerate(self._questions, start=1)])
     
     def _get_questions_as_one_prompt(self, news_txt=None)->str:
         """Возвращает промпт, в котором список вопросов представлен как его часть"""
@@ -63,7 +63,7 @@ class NewsHandler():
     def process_news(self, one_news:NewsDTO):
 
         #TODO: вот тут место для экспериментов
-        one_news_payload = self._prepare_questions_as_one_prompt(one_news.text)
+        one_news_payload = self._get_questions_as_one_prompt(one_news.text)
         #one_news_payload = self._prepare_questions_as_many_prompts(one_news.text)
 
         model_response = self._giga_call(one_news_payload)

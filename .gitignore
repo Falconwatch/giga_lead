@@ -6,3 +6,4 @@ venv
 jupyter_venv
 *.xlsx
 *.env
+web_venv
