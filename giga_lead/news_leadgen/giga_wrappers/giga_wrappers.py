@@ -54,9 +54,12 @@ class BaseGigaWrapper(GigaWrapperInterface):
 
     def _read_conf_data(self):
         #TODO: реализовать чтение данных из файла конфигурации
-        config = configparser.ConfigParser()
-        config.readfp(open(r'news_leadgen/conf/conf.cfg'))
-        n_async = config.get('DEFAULT', 'n_async')
+        try:
+            config = configparser.ConfigParser()
+            config.readfp(open(r'giga_lead/news_leadgen/conf/conf.cfg'))
+            n_async = config.get('DEFAULT', 'n_async')
+        except:
+            n_async = 10
         return {"n_async": int(n_async)}
 
 
