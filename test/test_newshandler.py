@@ -20,5 +20,10 @@ class Test(IsolatedAsyncioTestCase):
         response = await nh.batch_process_news(all_news)
         self.assertEqual(list, type(response))
 
+    async def test_base_call(self):
+        nh = NewsHandler()
+        response = await nh._giga_call('Мне нужен рецепт, как готовить блинчики')
+        self.assertEqual(str, type(response))
+
 
 
