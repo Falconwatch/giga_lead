@@ -9,15 +9,16 @@ class BaseGigaWrapper(GigaWrapperInterface):
     def __init__(self, base_prompt="") -> None:
         super().__init__(base_prompt)
         load_dotenv()
+        self.n_async = self._read_conf_data()["n_async"]
 
 
-    def _base_call(self, payload: Chat):
-        response = self._giga.chat(payload)
+    async def _base_call(self, payload: Chat):
+        response = await self._giga.achat(payload)
         response_content = response.choices[0].message.content
         return response_content
 
 
-    def call(self, msg: str) -> str:
+    async def call(self, msg: str) -> str:
         payload = Chat(
                         messages=[
                             Messages(role=MessagesRole.SYSTEM, content = self._base_promt),
@@ -25,7 +26,7 @@ class BaseGigaWrapper(GigaWrapperInterface):
                         temperature=0.001,
                         max_tokens=1000,
                         )
-        return self._base_call(payload)
+        return await self._base_call(payload)
     
 
     def call_dialog(self, messages: list[Messages]) -> str:
@@ -45,10 +46,21 @@ class BaseGigaWrapper(GigaWrapperInterface):
         cert_file = config.get('CERTS', 'cert_file')
         key_file = config.get('CERTS', 'key_file')
         key_file_password = config.get('CERTS', 'key_file_password')
+        
         return {"ca_bundle_file": ca_bundle_file,
                 "cert_file": cert_file,
                 "key_file": key_file,
                 "key_file_password": key_file_password}
+
+    def _read_conf_data(self):
+        #TODO: реализовать чтение данных из файла конфигурации
+        try:
+            config = configparser.ConfigParser()
+            config.readfp(open(r'giga_lead/news_leadgen/conf/conf.cfg'))
+            n_async = config.get('DEFAULT', 'n_async')
+        except:
+            n_async = 10
+        return {"n_async": int(n_async)}
 
 
 class GigaWrapperSigma(BaseGigaWrapper):
