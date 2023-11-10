@@ -36,41 +36,6 @@ class BaseGigaWrapper(GigaWrapperInterface):
         )
         return self._base_call(payload)
     
-
-    def _read_cert_data(self):
-        #TODO: реализовать чтение данных из файла конфигурации
-        config = configparser.ConfigParser()
-        config.readfp(open(r'certs/certs.cfg'))
-        ca_bundle_file = config.get('CERTS', 'ca_bundle_file')
-        cert_file = config.get('CERTS', 'cert_file')
-        key_file = config.get('CERTS', 'key_file')
-        key_file_password = config.get('CERTS', 'key_file_password')
-        return {"ca_bundle_file": ca_bundle_file,
-                "cert_file": cert_file,
-                "key_file": key_file,
-                "key_file_password": key_file_password}
-
-
-class GigaWrapperSigma(BaseGigaWrapper):
-    def __init__(self, base_prompt="") -> None:
-        super().__init__(base_prompt)
-        self._giga = GigaChat(
-            base_url="https://gigachat.devices.sberbank.ru/api/v1",
-            verify_ssl_certs=False,
-            **self._read_cert_data()
-        )
-
-
-class GigaWrapperAlpha(BaseGigaWrapper):
-    def __init__(self) -> None:
-        super().__init__()
-        self._giga = GigaChat(
-            base_url="https://gigachat.devices.sberbank.ru/api/v1",
-            verify_ssl_certs=False,
-            **self._read_cert_data()
-        )
-
-
 class GigaWrapperInternet(BaseGigaWrapper):
     def __init__(self, base_prompt="") -> None:
         super().__init__(base_prompt)
