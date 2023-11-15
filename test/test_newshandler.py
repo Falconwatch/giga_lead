@@ -2,6 +2,7 @@ from giga_lead.news_leadgen.dto.newsdto import NewsDTO
 from giga_lead.news_leadgen.news_handler import NewsHandler
 
 from unittest import main, IsolatedAsyncioTestCase
+import pytest 
 
 class Test(IsolatedAsyncioTestCase):
     async def test_process_one_news(self):
@@ -24,6 +25,19 @@ class Test(IsolatedAsyncioTestCase):
         nh = NewsHandler()
         response = await nh._giga_call('Мне нужен рецепт, как готовить блинчики')
         self.assertEqual(str, type(response))
+
+@pytest.mark.asyncio
+async def test_process_batch_of_news():
+    nh = NewsHandler()
+    all_news = [
+        NewsDTO(news_id='aaaa', text='В Москве произошла крупная авария'),
+        NewsDTO(news_id='bbbb', text='В Москве произошла крупная авария'),
+        NewsDTO(news_id='cccc', text='В Москве произошла крупная авария')
+    ]
+    all_news = all_news * 10
+
+    response = await nh.batch_process_news(all_news)
+    assert(list, type(response))
 
 
 

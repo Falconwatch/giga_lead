@@ -70,14 +70,15 @@ class NewsHandler():
                                   processing_result=[model_response]
                                   )
         return processing_result, self.get_questions_as_one_string()
-
+    
     async def batch_process_news(self, news: list[NewsDTO]):
         news_processing_result = list()
-        tasks = list()
-        self._giga_wrapper.n_async
-        for i in range(0, len(news), self._giga_wrapper.n_async):
-            for one_news in news[i:(i+10 if i+10<len(news) else len(news))]:
+        step = self._giga_wrapper.n_async
+        for i in range(0, len(news), step):
+            tasks = list()
+            for one_news in news[i:(i+step if i+step<len(news) else len(news))]:
                 task = create_task(self.process_news(one_news))
                 tasks.append(task)
             news_processing_result += await gather(*tasks)
+
         return news_processing_result
