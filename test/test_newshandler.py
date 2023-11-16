@@ -37,7 +37,9 @@ async def test_process_batch_of_news():
     all_news = all_news * 10
 
     response = await nh.batch_process_news(all_news)
+    k = 0
+    for npr in response:
+        k +=1
+
+    assert k == len(all_news), 'Length of Enter is not equal to Exit length'
     assert(list, type(response))
-
-
-
