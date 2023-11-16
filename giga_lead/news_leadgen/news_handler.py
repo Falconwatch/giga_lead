@@ -33,7 +33,7 @@ class NewsHandler():
     
     def get_questions_as_one_string(self) -> str:
         """Возвращает вопросы нумерованным списком"""
-        return "\n".join(["{0}) {1}".format(i,q) for i,q in enumerate(self._questions)])
+        return "\n".join(["{0}) {1}".format(i,q) for i,q in enumerate(self._questions, start=1)])
     
     def _get_questions_as_one_prompt(self, news_txt=None)->str:
         """Возвращает промпт, в котором список вопросов представлен как его часть"""
