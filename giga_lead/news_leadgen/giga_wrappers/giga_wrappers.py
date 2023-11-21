@@ -28,6 +28,44 @@ class BaseGigaWrapper(GigaWrapperInterface):
                         )
         return await self._base_call(payload)
     
+    async def call_d(self, messages_t : list()) -> str:
+        payload = Chat(
+                        messages=messages_t,
+                        temperature=0.001,
+                        max_tokens=1000,
+                        )
+        return await self._base_call(payload)
+    
+    def create_messages_for_chat_json(self, msg:str, json_step_list: list):
+        """ Функция создает историю чата для последующего вызов
+        ARG: 
+        msg - текст новости
+        json_step_list - 1 вопрос 
+        """
+
+        Messeges_json = {}
+        Messeges_array = list()
+        Messeges_json['news_id'] = msg.news_id
+        msg_text = msg.text
+
+        for json_step in json_step_list:
+            step = '1'
+            if json_step['role'] == 'system':
+                Messeges_array.append(Messages(role=MessagesRole.SYSTEM, content = json_step['content']))
+            if json_step['role'] == 'assistant':
+                Messeges_array.append(Messages(role=MessagesRole.ASSISTANT, content = json_step['content']))
+            if json_step['role'] == 'user':
+                Messeges_array.append(Messages(role=MessagesRole.USER,
+                                                content = json_step['content'] +  ' Текст Новости: ' + msg_text))
+            Messeges_json['Messeges_array'] = Messeges_array
+
+            if json_step['role'] == 'need_next_action':
+                step = json_step['Content']
+
+            Messeges_json['step'] = step
+        ### Нужно добавить еще штуку которая считает, что нужно кидать два запроса подряд
+        return Messeges_json
+    
 
     def call_dialog(self, messages: list[Messages]) -> str:
         payload = Chat(
