@@ -27,15 +27,7 @@ class BaseGigaWrapper(GigaWrapperInterface):
                         max_tokens=1000,
                         )
         return await self._base_call(payload)
-    
-    async def call_d(self, messages_t : list()) -> str:
-        payload = Chat(
-                        messages=messages_t,
-                        temperature=0.001,
-                        max_tokens=1000,
-                        )
-        return await self._base_call(payload)
-    
+        
     def create_messages_for_chat_json(self, msg:str, json_step_list: list):
         """ Функция создает историю чата для последующего вызов
         ARG: 
@@ -56,7 +48,7 @@ class BaseGigaWrapper(GigaWrapperInterface):
                 Messeges_array.append(Messages(role=MessagesRole.ASSISTANT, content = json_step['content']))
             if json_step['role'] == 'user':
                 Messeges_array.append(Messages(role=MessagesRole.USER,
-                                                content = json_step['content'] +  ' Текст Новости: ' + msg_text))
+                                                content = str(json_step['content'] +  ' Текст Новости: ' + msg_text)))
             Messeges_json['Messeges_array'] = Messeges_array
 
             if json_step['role'] == 'need_next_action':

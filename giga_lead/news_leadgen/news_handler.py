@@ -1,10 +1,11 @@
 #from dto.newsdto import NewsDTO, ProcessedNewsDTO
 from .dto.newsdto import NewsDTO, ProcessedNewsDTO
-from .giga_wrappers.giga_wrappers import GigaWrapperSigma, GigaWrapperInternet, GigaWrapperAlpha, BaseGigaWrapper
+from .giga_wrappers.giga_wrappers import GigaWrapperSigma, GigaWrapperInternet, GigaWrapperAlpha
 from gigachat.models import Messages, MessagesRole
 
 from enum import Enum
 from asyncio import create_task, gather
+import asyncio
 
 # class syntax
 class Segments(Enum):
@@ -30,13 +31,6 @@ class NewsHandler():
     async def _giga_call(self, msg: str) -> str:
         response = await self._giga_wrapper.call(msg)
         return response
-    
-    async def _giga_call_test(self, messages_info) -> dict:
-        """ Выхывает ГЧ с диалогом"""
-        messages = messages_info['Messeges_array']
-        response = await self._giga_wrapper.call_d(messages)
-        messages_info['answer'] = response
-        return messages_info
     
     def get_questions_as_one_string(self) -> str:
         """Возвращает вопросы нумерованным списком"""
@@ -99,30 +93,48 @@ class NewsHandler():
         mass_of = list()
         number = 1
         for iter in questions_json:
-            dict_temp = BaseGigaWrapper().create_messages_for_chat_json(news, iter)
+            dict_temp = self._giga_wrapper.create_messages_for_chat_json(news, iter)
             dict_temp['number'] = number
             mass_of.append(dict_temp)
             number += 1
             
         return mass_of
     
-    async def q(self, list_news, questions_json):
+
+    async def process_news_for_dialog(self, one_news:NewsDTO):
+
+        model_response = await self._giga_wrapper.call_dialog(one_news)
+        
+        return model_response
+    
+    def preparing_news_json(self, list_news, questions_json):
+
         array_messages = list()
         for iter in list_news:
             array_messages +=  self.create_array_messages(iter, questions_json)
 
         first_step = [x for x in array_messages if x['step'] != '2']
+        
+        return first_step
 
+
+    async def q(self, list_news, questions_json):
+
+        first_step = self.preparing_news_json(list_news, questions_json)
+        
         news_processing_result = list()
-
         step = self._giga_wrapper.n_async
 
         for i in range(0, len(first_step), step):
             tasks = list()
             for one_news in first_step[i:(i+step if i+step<len(first_step) else len(first_step))]:
 
-                task = create_task(self._giga_call_test(one_news))
-                tasks.append(task)       
-
+                messages = one_news['Messeges_array']
+                
+                task = self.process_news_for_dialog(messages)
+                
+                tasks.append(task)
             news_processing_result += await gather(*tasks)
-        return news_processing_result
+
+        return  news_processing_result
+
