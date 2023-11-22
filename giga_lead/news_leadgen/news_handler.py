@@ -5,6 +5,7 @@ from gigachat.models import Messages, MessagesRole
 
 from enum import Enum
 from asyncio import create_task, gather
+import asyncio
 
 # class syntax
 class Segments(Enum):
@@ -60,7 +61,6 @@ class NewsHandler():
         pass
 
 
-    #TODO: переписать на async    
     async def process_news(self, one_news:NewsDTO):
         #TODO: вот тут место для экспериментов
         one_news_payload = self._get_questions_as_one_prompt(one_news.text)
@@ -82,3 +82,59 @@ class NewsHandler():
             news_processing_result += await gather(*tasks)
 
         return news_processing_result
+    
+    def create_array_messages(self, news: NewsDTO, questions_json):
+        """ Создаем массив вопросов по одной новости  
+        ARG:  
+        news: новость
+        questions_json: список вопросов
+        
+        """
+        mass_of = list()
+        number = 1
+        for iter in questions_json:
+            dict_temp = self._giga_wrapper.create_messages_for_chat_json(news, iter)
+            dict_temp['number'] = number
+            mass_of.append(dict_temp)
+            number += 1
+            
+        return mass_of
+    
+
+    async def process_news_for_dialog(self, one_news:NewsDTO):
+
+        model_response = await self._giga_wrapper.call_dialog(one_news)
+        
+        return model_response
+    
+    def preparing_news_json(self, list_news, questions_json):
+
+        array_messages = list()
+        for iter in list_news:
+            array_messages +=  self.create_array_messages(iter, questions_json)
+
+        first_step = [x for x in array_messages if x['step'] != '2']
+        
+        return first_step
+
+
+    async def q(self, list_news, questions_json):
+
+        first_step = self.preparing_news_json(list_news, questions_json)
+        
+        news_processing_result = list()
+        step = self._giga_wrapper.n_async
+
+        for i in range(0, len(first_step), step):
+            tasks = list()
+            for one_news in first_step[i:(i+step if i+step<len(first_step) else len(first_step))]:
+
+                messages = one_news['Messeges_array']
+                
+                task = self.process_news_for_dialog(messages)
+                
+                tasks.append(task)
+            news_processing_result += await gather(*tasks)
+
+        return  news_processing_result
+
