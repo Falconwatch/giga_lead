@@ -83,6 +83,16 @@ class NewsHandler():
 
         return news_processing_result
     
+    def one_news(self, messages: str) -> str:
+        """
+        Задаем вопрос по одной ноовсти ГЧ
+
+        ARG:
+        messages: одна новость 
+        
+        """
+        return self._giga_wrapper.call_sync(messages)
+    
     def create_array_messages(self, news: NewsDTO, questions_json):
         """ Создаем массив вопросов по одной новости  
         ARG:  
@@ -98,17 +108,27 @@ class NewsHandler():
             mass_of.append(dict_temp)
             number += 1
             
-        return mass_of
-    
+        return mass_of    
 
-    async def process_news_for_dialog(self, one_news:NewsDTO):
+    async def process_news_for_dialog(self, one_news):
 
-        model_response = await self._giga_wrapper.call_dialog(one_news)
+        messages = one_news['Messeges_array']
+
+        model_response = await self._giga_wrapper.call_dialog(messages)
+
+        one_news['answer'] = model_response
         
-        return model_response
+        return one_news
     
-    def preparing_news_json(self, list_news, questions_json):
+    def preparing_news_json(self, list_news: list(), questions_json: dict) -> dict:
+        """
+        Функция подготавливает вопросы к вызову ГЧ. Расписана логика первого вызова, затем второго
 
+        ARG: 
+        list_news - лист новостей
+        questions_json - словарик с вопросами
+
+        """
         array_messages = list()
         for iter in list_news:
             array_messages +=  self.create_array_messages(iter, questions_json)
@@ -118,8 +138,16 @@ class NewsHandler():
         return first_step
 
 
-    async def q(self, list_news, questions_json):
 
+    async def q(self, list_news: list(), questions_json: dict):
+        """
+        Вызов ГЧ
+
+        ARG: 
+        list_news - лист новостей
+        questions_json - словарик с вопросами
+
+        """
         first_step = self.preparing_news_json(list_news, questions_json)
         
         news_processing_result = list()
@@ -129,12 +157,17 @@ class NewsHandler():
             tasks = list()
             for one_news in first_step[i:(i+step if i+step<len(first_step) else len(first_step))]:
 
-                messages = one_news['Messeges_array']
+                #messages = one_news['Messeges_array']
                 
-                task = self.process_news_for_dialog(messages)
+                #task = self.process_news_for_dialog(messages)
+                task = self.process_news_for_dialog(one_news)
+
                 
                 tasks.append(task)
             news_processing_result += await gather(*tasks)
+
+           
+
 
         return  news_processing_result
 

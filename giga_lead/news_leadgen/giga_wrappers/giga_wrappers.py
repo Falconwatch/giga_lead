@@ -18,6 +18,21 @@ class BaseGigaWrapper(GigaWrapperInterface):
         return response_content
 
 
+    def _base_call_sync(self, payload: Chat):
+        response = self._giga.chat(payload)
+        response_content = response.choices[0].message.content
+        return response_content
+
+    def call_sync(self, msg: str) -> str:
+        payload = Chat(
+                        messages=[
+                            Messages(role=MessagesRole.SYSTEM, content = self._base_promt),
+                            Messages(role=MessagesRole.USER, content=msg)],
+                        temperature=0.001,
+                        max_tokens=1000,
+                        )
+        return self._base_call_sync(payload)
+    
     async def call(self, msg: str) -> str:
         payload = Chat(
                         messages=[
